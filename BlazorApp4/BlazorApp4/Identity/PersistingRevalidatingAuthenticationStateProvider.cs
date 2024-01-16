@@ -73,15 +73,13 @@ namespace BlazorApp4.Identity
             if (principal.Identity?.IsAuthenticated == true)
             {
                 var userId = principal.FindFirst(_options.ClaimsIdentity.UserIdClaimType)?.Value;
-                var email = principal.FindFirst("name")?.Value;
+                var email = principal.FindFirst(_options.ClaimsIdentity.EmailClaimType)?.Value;
+                var name = principal.FindFirst("name")?.Value ?? string.Empty;
+                var roles = principal.FindAll(_options.ClaimsIdentity.RoleClaimType).Select(x => x.Value);
 
                 if (userId != null && email != null)
                 {
-                    _state.PersistAsJson(nameof(UserInfo), new UserInfo
-                    {
-                        UserId = userId,
-                        Email = email,
-                    });
+                    _state.PersistAsJson(nameof(UserInfo), new UserInfo(userId, email, name, roles.ToList()));
                 }
             }
         }

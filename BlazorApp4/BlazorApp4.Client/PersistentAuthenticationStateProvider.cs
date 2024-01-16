@@ -16,15 +16,25 @@ namespace BlazorApp4.Client
                 return _unauthenticatedTask;
             }
 
-            Claim[] claims = [
+            List<Claim> claims =
+            [
                 new Claim(ClaimTypes.NameIdentifier, userInfo.UserId),
-                new Claim(ClaimTypes.Name, userInfo.Email),
-                new Claim(ClaimTypes.Email, userInfo.Email)];
+                new Claim(ClaimTypes.Name, userInfo.UserName),
+                new Claim(ClaimTypes.Email, userInfo.Email)
+            ];
+            
+            claims.AddRange(userInfo.Roles.Select(role => new Claim(ClaimTypes.Role, role)));
 
-            return Task.FromResult(
-                new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity(claims,
-                    authenticationType: nameof(PersistentAuthenticationStateProvider)))));
+            return Task.FromResult
+                (
+                 new AuthenticationState
+                     (
+                      new ClaimsPrincipal
+                          (
+                           new ClaimsIdentity(claims, authenticationType: nameof(PersistentAuthenticationStateProvider))
+                          )
+                     )
+                );
         }
     }
-
 }
